@@ -10,8 +10,8 @@ const {
 
 recipeRouter.get("/recipes", getUsers);
 recipeRouter.get("/recipes/:id", getUserById);
-recipeRouter.post("/recipes", setRecipe);
+recipeRouter.post("/author/:idAuthor/recipes", setRecipe);
 recipeRouter.put("/recipes/:id", editRecipe);
-recipeRouter.delete("/recipes/:id", deleteRecipe);
+recipeRouter.delete("/author/:idRecipe/recipes", deleteRecipe);
 
 module.exports = recipeRouter;

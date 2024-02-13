@@ -1,4 +1,5 @@
 const recipeModel = require("../models/recipeModel");
+const authorModel = require("../models/authorModel");
 
 // Get all recipe, by name, by category, by ingredient
 const getUsers = async (req, res) => {
@@ -34,10 +35,19 @@ const getUserById = async (req, res) => {
 // Create recipe
 const setRecipe = async (req, res) => {
     try {
-        let newRecipe = new recipeModel(req.body);
-        newRecipe.validateSync(); // Check if compliant with model
-        await newRecipe.save();
-        res.send("recipe added succesfully");
+        const author = authorModel.findOne({ _id: req.params.idAuthor });
+        if (author) {
+            let newRecipe = new recipeModel(req.body);
+            newRecipe.validateSync(); // Check if compliant with model
+            await newRecipe.save();
+            await authorModel.updateOne(
+                { _id: req.params.idAuthor },
+                { $push: { recipe: newRecipe._id } },
+            );
+            res.send("recipe added succesfully");
+        } else {
+            res.json("aucun author trouvé");
+        }
     } catch (e) {
         res.json(e);
     }
@@ -56,8 +66,17 @@ const editRecipe = async (req, res) => {
 // Delete recipe by id
 const deleteRecipe = async (req, res) => {
     try {
-        await recipeModel.deleteOne({ _id: req.params.id });
-        res.send("recipe deleted");
+        const author = await authorModel.findOne({
+            recipe: req.params.idRecipe,
+        });
+        if (author) {
+            await authorModel.updateOne(
+                { recipe: req.params.idRecipe },
+                { $pull: { recipe: req.params.idRecipe } },
+            );
+            await recipeModel.deleteOne({ _id: req.params.idRecipe });
+            res.send("recipe deleted");
+        }
     } catch (e) {
         res.send(e);
     }

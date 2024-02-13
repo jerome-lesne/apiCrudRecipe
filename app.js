@@ -1,6 +1,7 @@
 const express = require("express");
 const recipeRouter = require("./src/routes/recipeRoute");
 const mongoose = require("mongoose");
+const authorRouter = require("./src/routes/authorRoute");
 
 const app = express();
 const port = 3000;
@@ -8,6 +9,7 @@ const db = "mongodb://localhost:27017/apicrudrecipe"; // apibook will create a n
 
 app.use(express.json());
 app.use(recipeRouter);
+app.use(authorRouter);
 
 app.listen(port, (err) => {
     if (!err) {
